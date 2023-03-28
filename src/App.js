@@ -25,26 +25,48 @@ const App = () => {
 
   const validate = (values) => {
     const errors = {};
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-    if (!values.username) errors.username = "Username is required!";
+    const usernameRegex = /^[a-zA-Z]{5,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{4,}$/;
+
+    if (!values.username) {
+      errors.username = "Username is required";
+    } else if (values.username.length < 5) {
+      errors.username = "Username must be more than 4 characters";
+    } else if (!usernameRegex.test(values.username)) {
+      errors.username = "Numbers are anot allowed";
+    }
 
     if (!values.email) {
       errors.email = "Email is required!";
-    } else if (!regex.test(values.email)) {
+    } else if (!emailRegex.test(values.email)) {
       errors.email = "This is not a valid email format!";
     }
     if (!values.password) {
       errors.password = "Password is required";
     } else if (values.password.length < 4) {
-      errors.password = "Password must be more than 4 characters";
+      errors.password = "Password must be more than 3 characters";
+    } else if (!passwordRegex.test(values.password)) {
+      errors.password =
+        "Passord must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 symbol (@$!%*?&)";
     }
     return errors;
+  };
+
+  const signedIn = () => {
+    setTimeout(() => window.location.reload(), 1500);
+    return (
+      <div className="ui message success">
+        <h3>Signed in successfully</h3>
+      </div>
+    );
   };
 
   return (
     <div className="container">
       {Object.keys(formErrors).length === 0 && isSubmit ? (
-        <div className="ui message success">Signed in successfully</div>
+        signedIn()
       ) : (
         // <pre>{JSON.stringify(formValues, undefined, 2)}</pre>
         <form onSubmit={handleSubmit}>
@@ -56,7 +78,7 @@ const App = () => {
               <input
                 type="text"
                 name="username"
-                placeholder="Username"
+                placeholder="johndoe"
                 value={formValues.username}
                 onChange={handleChange}
               />
@@ -67,7 +89,7 @@ const App = () => {
               <input
                 type="text"
                 name="email"
-                placeholder="Email"
+                placeholder="john@doe.com"
                 value={formValues.email}
                 onChange={handleChange}
               />
@@ -78,7 +100,7 @@ const App = () => {
               <input
                 type="password"
                 name="password"
-                placeholder="Password"
+                placeholder="P@a$$0rd"
                 value={formValues.password}
                 onChange={handleChange}
               />
